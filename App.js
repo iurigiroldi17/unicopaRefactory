@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Image, ImageBackground, SectionList } from 'react-native';
-import GameCard from './components/GameCard';
+import { StyleSheet, Text, View, Image, ImageBackground, ScrollView } from 'react-native';
+import DiaCard from './components/DiaCard';
 import dados from './assets/dados.json'
 
 export default function App() {
@@ -40,18 +40,15 @@ export default function App() {
 
       <Text style={styles.title}>CALENDÁRIO</Text>
 
-      <SectionList
-        sections={jogosTratados}
-        keyExtractor={(item) => item.id.toString()}
+      <ScrollView
         style={{ width: '100%' }}
-        contentContainerStyle={{ paddingBottom: 20, alignItems: 'center' }}
-        renderItem={({ item }) => <GameCard game={item} />}
-        renderSectionHeader={({ section }) => (
-          <View style={styles.card}>
-            <Text style={styles.data}>{section.title}</Text>
-          </View>
-        )}
-      />
+        contentContainerStyle={{ alignItems: 'center', paddingBottom: 20 }}
+        showsVerticalScrollIndicator={false}
+      >
+        {jogosTratados.map((dia) => (
+          <DiaCard key={dia.title} data={dia.title} jogos={dia.data} />
+        ))}
+      </ScrollView>
 
     </ImageBackground>
   );

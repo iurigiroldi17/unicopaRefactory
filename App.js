@@ -42,25 +42,15 @@ export default function App() {
 
       <SectionList
         sections={jogosTratados}
-        keyExtractor={(item, index) => item + index}
-        renderItem={() => null}
+        keyExtractor={(item) => item.id.toString()}
+        style={{ width: '100%' }}
+        contentContainerStyle={{ paddingBottom: 20, alignItems: 'center' }}
+        renderItem={({ item }) => <GameCard game={item} />}
         renderSectionHeader={({ section }) => (
-          <View style={styles.card} >
-
-            <Text style={styles.data}> {section.title} </Text>
-              {
-                section.data.map((jogo) => (
-                  <GameCard key={jogo.id} game={jogo} />
-                ))
-              }
-
-
-
+          <View style={styles.card}>
+            <Text style={styles.data}>{section.title}</Text>
           </View>
-        )
-        }
-
-
+        )}
       />
 
     </ImageBackground>
@@ -69,7 +59,7 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    height: '100%',
+    flex: 1,
     width: '100%',
     backgroundColor: '#040b13',
     alignItems: 'center',

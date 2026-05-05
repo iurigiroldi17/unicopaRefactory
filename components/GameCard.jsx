@@ -1,4 +1,5 @@
 import { View, Text, Image, StyleSheet } from 'react-native';
+import { formatDate } from './formatDate';
 
 export default function GameCard({ game }) {
 
@@ -31,7 +32,7 @@ export default function GameCard({ game }) {
                 </View>
 
                 <View style={styles.horario}>
-                    <Text style={styles.hora}>{game.hora_brasilia}</Text>
+                   <Text>{formatDate(game.data_brasilia)}</Text>
                     <Text style={styles.subTitulo}>VS</Text>
                 </View>
 

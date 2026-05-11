@@ -2,8 +2,9 @@ import { View, Text, StyleSheet } from 'react-native';
 import GameCard from './GameCard';
 
 export default function DiaCard({ data, jogos }) {
-  const hoje = new Date().toISOString().split('T')[0];
-  const isHoje = data === hoje;
+  const hoje = new Date();
+  const hojeFormatado = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
+  const isHoje = data === hojeFormatado;
 
   return (
     <View style={[styles.card, isHoje && styles.todayCard]}>

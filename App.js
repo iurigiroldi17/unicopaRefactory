@@ -1,15 +1,26 @@
-import { useState } from 'react';
-import { StyleSheet, Text, View, Image, ImageBackground, ScrollView } from 'react-native';
+import { useMemo, useState } from 'react';
+import { StyleSheet, Text, View, Image, ImageBackground, ScrollView, Pressable } from 'react-native';
 import DiaCard from './components/DiaCard';
 import { agruparPorData } from './utils/agruparPorData';
 import dados from './assets/dados.json'
 
 export default function App() {
   const [favoritos, setFavoritos] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState('TODOS');
 
-  const jogos = dados.jogos
+  const jogos = dados.jogos;
 
-  const jogosAgrupados = agruparPorData(jogos)
+  const grupos = useMemo(
+    () => ['TODOS', ...Array.from(new Set(jogos.map((jogo) => jogo.grupo))).sort()],
+    [jogos]
+  );
+
+  const jogosFiltrados =
+    selectedGroup === 'TODOS'
+      ? jogos
+      : jogos.filter((jogo) => jogo.grupo === selectedGroup);
+
+  const jogosAgrupados = agruparPorData(jogosFiltrados);
 
   const jogosTratados = Object.keys(jogosAgrupados).map(data => {
     return {
@@ -32,6 +43,33 @@ export default function App() {
       />
 
       <Text style={styles.title}>CALENDÁRIO</Text>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.groupFilterContainer}
+        style={{ width: '100%', marginTop: 12 }}
+      >
+        {grupos.map((grupo) => (
+          <Pressable
+            key={grupo}
+            onPress={() => setSelectedGroup(grupo)}
+            style={[
+              styles.groupButton,
+              selectedGroup === grupo && styles.groupButtonActive,
+            ]}
+          >
+            <Text
+              style={[
+                styles.groupButtonText,
+                selectedGroup === grupo && styles.groupButtonTextActive,
+              ]}
+            >
+              {grupo}
+            </Text>
+          </Pressable>
+        ))}
+      </ScrollView>
 
       <ScrollView
         style={{ width: '100%' }}
@@ -71,6 +109,31 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     color: 'white',
+  },
+  groupFilterContainer: {
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  groupButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#2b3c52',
+    backgroundColor: '#08111d',
+    marginRight: 10,
+  },
+  groupButtonActive: {
+    backgroundColor: '#f2cc2f',
+    borderColor: '#f2cc2f',
+  },
+  groupButtonText: {
+    color: '#8fa3b8',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  groupButtonTextActive: {
+    color: '#040b13',
   },
   card: {
     marginTop: 20,

@@ -1,7 +1,8 @@
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { formatDate } from '../utils/formatDate';
 
-export default function GameCard({ game }) {
+export default function GameCard({ game, favoritos = [], onToggleFavorito }) {
+  const isFavorito = favoritos.includes(game.id);
 
       const flags = {
         MEX: require('../assets/jogos/mexico.png'),
@@ -74,8 +75,8 @@ export default function GameCard({ game }) {
                 </View>
 
                 <View style={styles.horario}>
-                   <Text>{formatDate(game.data_brasilia)}</Text>
-                    <Text style={styles.subTitulo}>VS</Text>
+                   <Text style={styles.hora}>{game.hora_brasilia}</Text>
+                   <Text style={styles.subTitulo}>{formatDate(game.data_brasilia)}</Text>
                 </View>
 
                 <View style={styles.time}>
@@ -89,10 +90,23 @@ export default function GameCard({ game }) {
             </View>
 
             <View style={styles.local}>
-                <Text style={styles.subTitulo}>{game.estadio}</Text>
-                <Text style={styles.subTitulo}>
-                    {game.cidade} • {game.pais}
-                </Text>
+                <View>
+                  <Text style={styles.subTitulo}>{game.estadio}</Text>
+                  <Text style={styles.subTitulo}>
+                      {game.cidade} • {game.pais}
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={() => onToggleFavorito(game.id)}
+                  style={({ pressed }) => [
+                    styles.favoriteButton,
+                    pressed && styles.favoriteButtonPressed,
+                  ]}
+                >
+                  <Text style={[styles.favoriteIcon, isFavorito && styles.favoriteIconActive]}>
+                    {isFavorito ? '★' : '☆'}
+                  </Text>
+                </Pressable>
             </View>
 
         </View>
@@ -150,7 +164,22 @@ const styles = StyleSheet.create({
   local: {
     marginTop: 10,
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  favoriteButton: {
+    padding: 8,
+    borderRadius: 999,
+  },
+  favoriteButtonPressed: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  favoriteIcon: {
+    color: '#8fa3b8',
+    fontSize: 18,
+  },
+  favoriteIconActive: {
+    color: '#f2cc2f',
   },
   subTitulo: {
     color: '#8fa3b8',

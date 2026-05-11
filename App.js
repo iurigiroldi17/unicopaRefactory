@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { StyleSheet, Text, View, Image, ImageBackground, ScrollView } from 'react-native';
 import DiaCard from './components/DiaCard';
 import { agruparPorData } from './utils/agruparPorData';
 import dados from './assets/dados.json'
 
 export default function App() {
+  const [favoritos, setFavoritos] = useState([]);
 
   const jogos = dados.jogos
 
@@ -15,6 +17,12 @@ export default function App() {
       data: jogosAgrupados[data]
     }
   })
+
+  const toggleFavorito = (id) => {
+    setFavoritos((prev) =>
+      prev.includes(id) ? prev.filter((favId) => favId !== id) : [...prev, id]
+    );
+  };
 
   return (
     <ImageBackground style={styles.container}
@@ -31,7 +39,13 @@ export default function App() {
         showsVerticalScrollIndicator={false}
       >
         {jogosTratados.map((dia) => (
-          <DiaCard key={dia.title} data={dia.title} jogos={dia.data} />
+          <DiaCard
+            key={dia.title}
+            data={dia.title}
+            jogos={dia.data}
+            favoritos={favoritos}
+            onToggleFavorito={toggleFavorito}
+          />
         ))}
       </ScrollView>
 

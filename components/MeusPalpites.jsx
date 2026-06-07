@@ -41,7 +41,13 @@ export default function MeusPalpites({ palpites = [], jogosById = {}, onBack, fe
     return acc;
   }, {});
 
-  const datasOrdenadas = Object.keys(palpitesAgrupados).sort();
+  const datasOrdenadas = Object.keys(palpitesAgrupados).sort((a, b) => {
+    if (a === 'sem-data') return 1;
+    if (b === 'sem-data') return -1;
+    const da = new Date(a);
+    const db = new Date(b);
+    return da - db;
+  });
 
   return (
     <View style={styles.container}>
@@ -59,7 +65,13 @@ export default function MeusPalpites({ palpites = [], jogosById = {}, onBack, fe
           <View style={styles.emptyCard}><Text style={styles.emptyText}>Você ainda não cadastrou palpites</Text></View>
         ) : (
           datasOrdenadas.map((data) => {
-            const items = palpitesAgrupados[data].sort((a, b) => (a.jogo.hora_brasilia || '').localeCompare(b.jogo.hora_brasilia || ''));
+            const items = palpitesAgrupados[data].slice().sort((a, b) => {
+              const parseTime = (t = '') => {
+                const parts = (t || '').split(':').map(Number);
+                return (parts[0] || 0) * 60 + (parts[1] || 0);
+              };
+              return parseTime(a.jogo.hora_brasilia) - parseTime(b.jogo.hora_brasilia);
+            });
             return (
               <View key={data} style={{ width: '100%', alignItems: 'center' }}>
                 <View style={styles.dateHeader}><Text style={styles.dateHeaderText}>{data === 'sem-data' ? 'Sem data' : formatDate(data)}</Text></View>

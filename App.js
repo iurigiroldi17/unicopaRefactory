@@ -81,8 +81,18 @@ export default function App() {
       setStatusMessage('Erro ao carregar jogos: ' + error.message);
       setJogos([]);
     } else {
-      setJogos(data ?? []);
-      setStatusMessage(data?.length === 0 ? 'Nenhum jogo carregado' : '');
+      const fetched = data ?? [];
+
+      // Fallback de desenvolvimento: se o banco retornar poucos jogos,
+      // carregar os jogos do arquivo local `dados.json` para exibir tudo.
+      if (typeof __DEV__ !== 'undefined' && __DEV__ && fetched.length < (dados?.jogos?.length || 0)) {
+        console.warn('fetchJogos: poucos jogos no Supabase, usando dados locais para desenvolvimento');
+        setJogos(dados.jogos || fetched);
+        setStatusMessage('Carregando jogos locais (dev)');
+      } else {
+        setJogos(fetched);
+        setStatusMessage(fetched.length === 0 ? 'Nenhum jogo carregado' : '');
+      }
     }
   };
 
@@ -179,6 +189,16 @@ export default function App() {
 
   const handleLogin = async () => {
     setStatusMessage('');
+
+    // Dev-only bypass: allow any email/password when developing and the env flag is set
+    // To enable locally, add EXPO_PUBLIC_ALLOW_DEV_LOGIN=true to your .env.local
+    if (typeof __DEV__ !== 'undefined' && __DEV__ && process.env.EXPO_PUBLIC_ALLOW_DEV_LOGIN === 'true') {
+      setUser({ id: 'dev-user', email });
+      setStatusMessage('Dev login ativo (apenas local).');
+      setEmail('');
+      setPassword('');
+      return;
+    }
 
     if (!email.trim() || !password) {
       setStatusMessage('E-mail e senha s�o obrigat�rios.');
@@ -354,6 +374,20 @@ export default function App() {
     [jogos]
   );
 
+  useEffect(() => {
+    // Debug: mostrar resumo dos jogos carregados
+    try {
+      console.log('DEBUG: jogos count=', jogos.length);
+      console.log('DEBUG: primeiros jogos=', JSON.stringify(jogos.slice(0, 5)));
+      console.log('DEBUG: grupos=', JSON.stringify(grupos));
+      const jogosAgr = agruparPorData(jogosFiltrados);
+      const resumo = Object.keys(jogosAgr).map((k) => ({ date: k, count: jogosAgr[k].length }));
+      console.log('DEBUG: jogosAgrupados resumo=', JSON.stringify(resumo));
+    } catch (e) {
+      console.warn('DEBUG erro ao logar jogos', e);
+    }
+  }, [jogos, selectedGroup]);
+
   const jogosFiltrados =
     selectedGroup === 'TODOS'
       ? jogos
@@ -409,7 +443,7 @@ export default function App() {
   return (
     <ImageBackground style={styles.container} source={require('./assets/bg-overlay.png')}>
       <Image style={styles.logo} source={require('./assets/unicopa.png')} />
-      <Text style={styles.title}>CALEND�RIO</Text>
+      <Text style={styles.title}>CALENDÁRIO</Text>
       <View style={styles.authBar}>
         <Text style={styles.userText}>{user.email}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>

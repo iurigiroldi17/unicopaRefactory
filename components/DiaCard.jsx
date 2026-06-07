@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import GameCard from './GameCard';
+import { formatDate } from '../utils/formatDate';
 
 export default function DiaCard({ data, jogos, favoritos, onToggleFavorito }) {
   const hoje = new Date();
@@ -8,7 +9,7 @@ export default function DiaCard({ data, jogos, favoritos, onToggleFavorito }) {
 
   return (
     <View style={[styles.card, isHoje && styles.todayCard]}>
-      <Text style={[styles.data, isHoje && styles.todayData]}>{data}</Text>
+      <Text style={[styles.data, isHoje && styles.todayData]}>{formatDate(data)}</Text>
       {jogos.map((jogo) => (
         <GameCard
           key={jogo.id}

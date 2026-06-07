@@ -31,6 +31,4 @@ export const flags = {
   COL: require('../assets/jogos/colombia.png'),
   CHI: require('../assets/jogos/chile.png'),
   ECU: require('../assets/jogos/ecuador.png'),
-  
-} 
-import { flags } from '../utils/flags';
+};
